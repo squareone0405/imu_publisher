@@ -12,7 +12,7 @@ public:
     ImuPublisher(ros::NodeHandle &n){
         imu_pub = n.advertise<sensor_msgs::Imu>("imu", 1000);
 		std::cout<<"init"<<std::endl;
-        imu_settings = new RTIMUSettings(SETTINGS_FILE);
+        imu_settings = new RTIMUSettings(SETTINGS_FILE, true);
         imu = RTIMU::createIMU(imu_settings);
         imu->IMUInit();
         std::cout<<"IMU Name: " << imu->IMUName()<<std::endl;
@@ -49,12 +49,12 @@ public:
     void process(){
         while (imu->IMURead()) {
             RTIMU_DATA data = imu->getIMUData();
-            printData(data);
+            //printData(data);
         }
     }
     
 private:
-    const char* SETTINGS_FILE = "/home/squareone/";
+    const char* SETTINGS_FILE = "/home/squareone/imu_ws/RTIMULib.ini";
     ros::Publisher imu_pub;
     RTIMU* imu;
     RTIMUSettings* imu_settings;
