@@ -49,12 +49,41 @@ public:
     void process(){
         while (imu->IMURead()) {
             RTIMU_DATA data = imu->getIMUData();
-            //printData(data);
+			sensor_msgs::Imu imu_msg;
+			imu_msg.header.stamp = ros::Time::now();
+			imu_msg.header.frame_id = string("imu_link");
+			for (int i = 0; i < 9; i++) {
+				imu_msg.orientation_covariance[i] = 0;
+				imu_msg.angular_velocity_covariance[i] = 0;
+				imu_msg.linear_acceleration_covariance[i] = 0;
+			}
+            if(data.fusionQPoseValid){
+                imu_msg.orientation.w = data.fusionQPose.scalar();
+                imu_msg.orientation.x = data.fusionQPose.x();
+                imu_msg.orientation.y = data.fusionQPose.y();
+                imu_msg.orientation.z = data.fusionQPose.z();
+            }
+            else continue;
+			if(data.gyroValid){
+				imu_msg.angular_velocity.x = data.gyro.x();
+				imu_msg.angular_velocity.y = data.gyro.y();
+				imu_msg.angular_velocity.z = data.gyro.z();
+			}
+			else continue;
+			if(data.accelValid){
+				imu_msg.linear_acceleration.x = data.accel.x();
+			    imu_msg.linear_acceleration.y = data.accel.y();
+			    imu_msg.linear_acceleration.z = data.accel.z();
+			}
+            else continue;
+			imu_pub.publish(imu_msg);
+			//printData(data);
         }
     }
     
 private:
-    const char* SETTINGS_FILE = "/home/nvidia/imu_ws/9250.ini";
+    //const char* SETTINGS_FILE = "/home/nvidia/imu_ws/9250.ini";
+	const char* SETTINGS_FILE = "/home/squareone/imu_ws/RTIMULib.ini";
     ros::Publisher imu_pub;
     RTIMU* imu;
     RTIMUSettings* imu_settings;
