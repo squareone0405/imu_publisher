@@ -54,7 +54,7 @@ public:
     }
     
 private:
-    const char* SETTINGS_FILE = "/home/squareone/imu_ws/RTIMULib.ini";
+    const char* SETTINGS_FILE = "/home/nvidia/imu_ws/9250.ini";
     ros::Publisher imu_pub;
     RTIMU* imu;
     RTIMUSettings* imu_settings;
